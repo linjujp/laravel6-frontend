@@ -9,3 +9,8 @@ export function setTokenExpiresAt(state, date) {
   state.token_expires_at = date;
   LocalStorage.set("token_expires_at", date);
 }
+
+export function setUser(state, user) {
+  state.user = user;
+  LocalStorage.set("user", user);
+}

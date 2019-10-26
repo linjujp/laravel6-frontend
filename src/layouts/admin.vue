@@ -11,11 +11,18 @@
           <q-btn icon="account_box" round flat color="white" size="md">
             <q-menu fit square>
               <q-list dense class="no-border-radius text-right">
-                <q-item clickable v-close-popup :to="{ name: 'account' }">
-                  <q-item-section label>Account</q-item-section>
-                  <q-item-section side right
-                    ><q-icon name="account_circle"
-                  /></q-item-section>
+                <q-item v-if="user" class="q-my-md" :title="user.email">
+                  <q-item-section class="text-left">
+                    <div>
+                      {{ user.name }}
+                    </div>
+                    <div class="text-caption text-grey">
+                      {{ user.roles ? user.roles[0].name : "" }}
+                    </div>
+                  </q-item-section>
+                  <q-item-section side right>
+                    <q-icon name="account_box" color="primary" size="2em" />
+                  </q-item-section>
                 </q-item>
                 <q-separator />
                 <q-item clickable v-close-popup @click="logout">
@@ -77,6 +84,20 @@ export default {
       get() {
         return this.$store.state.settings.url;
       }
+    },
+    user: {
+      get() {
+        return this.$store.state.authorization.user;
+      },
+      set(data) {
+        this.$store.commit("authorization/setUser", data);
+        this.$q.localStorage.set("user", data);
+      }
+    },
+    memberSince() {
+      return this.user
+        ? this.$moment(this.user.created_at).format("MMMM Do, YYYY")
+        : "";
     }
   },
   methods: {
@@ -91,10 +112,26 @@ export default {
       var self = this;
       this.time = self.$moment().format("MMMM Do, YYYY h:mm:ss A");
       setTimeout(self.setTime, 1000);
+    },
+    getUser() {
+      if (this.user === null) {
+        this.$axios
+          .get(this.url + "user")
+          .then(response => {
+            this.user = response.data;
+          })
+          .catch(() => {
+            this.$q.notify({
+              message: "Unable to get user information.",
+              type: "negative"
+            });
+          });
+      }
     }
   },
   async mounted() {
     this.setTime();
+    this.getUser();
   }
 };
 </script>

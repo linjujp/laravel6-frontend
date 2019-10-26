@@ -102,15 +102,6 @@ export default {
         this.$q.localStorage.set("token", data);
       }
     }
-    // user: {
-    //   get() {
-    //     return this.$store.state.authorization.user;
-    //   },
-    //   set(data) {
-    //     this.$store.commit("authorization/setUser", data);
-    //     this.$q.localStorage.set("user", data);
-    //   }
-    // },
   },
   methods: {
     login() {
